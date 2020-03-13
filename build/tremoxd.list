@@ -1,0 +1,292 @@
+
+build/tremoxd.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+20017844 <_text_start>:
+
+__attribute__((weak))
+void _hook_process(const float *main_xn, float *main_yn,
+                   const float *sub_xn, float *sub_yn,
+                   uint32_t frames)
+{
+20017844:	4770      	bx	lr
+
+20017846 <_hook_resume>:
+
+}
+
+__attribute__((weak))
+void _hook_resume(void)
+{
+20017846:	4770      	bx	lr
+
+}
+
+__attribute__((weak))
+void _hook_param(uint8_t index, int32_t value)
+{
+20017848:	4770      	bx	lr
+
+2001784a <_hook_suspend>:
+2001784a:	4770      	bx	lr
+  _hook_init(platform, api);
+}
+
+__attribute__((weak))
+void _hook_init(uint32_t platform, uint32_t api)
+{
+2001784c:	4770      	bx	lr
+
+2001784e <_entry>:
+ * @{
+ */
+
+__attribute__((used))
+void _entry(uint32_t platform, uint32_t api)
+{
+2001784e:	4b10      	ldr	r3, [pc, #64]	; (20017890 <_entry+0x42>)
+20017850:	4a10      	ldr	r2, [pc, #64]	; (20017894 <_entry+0x46>)
+20017852:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
+20017856:	4688      	mov	r8, r1
+20017858:	4607      	mov	r7, r0
+  // Ensure zero-clear BSS segment
+  uint8_t * __restrict bss_p = (uint8_t *)&_bss_start;
+  const uint8_t * const bss_e = (uint8_t *)&_bss_end;
+
+  for (; bss_p != bss_e;)
+    *(bss_p++) = 0;
+2001785a:	2100      	movs	r1, #0
+{
+  // Ensure zero-clear BSS segment
+  uint8_t * __restrict bss_p = (uint8_t *)&_bss_start;
+  const uint8_t * const bss_e = (uint8_t *)&_bss_end;
+
+  for (; bss_p != bss_e;)
+2001785c:	4293      	cmp	r3, r2
+2001785e:	d002      	beq.n	20017866 <_entry+0x18>
+    *(bss_p++) = 0;
+20017860:	f803 1f01 	strb.w	r1, [r3, #1]!
+20017864:	e7fa      	b.n	2001785c <_entry+0xe>
+20017866:	4b0c      	ldr	r3, [pc, #48]	; (20017898 <_entry+0x4a>)
+20017868:	4c0c      	ldr	r4, [pc, #48]	; (2001789c <_entry+0x4e>)
+2001786a:	1ae4      	subs	r4, r4, r3
+2001786c:	10a4      	asrs	r4, r4, #2
+
+  // Call constructors if any.  
+  const size_t count = __init_array_end - __init_array_start;
+  for (size_t i = 0; i<count; ++i) {
+2001786e:	2500      	movs	r5, #0
+20017870:	461e      	mov	r6, r3
+20017872:	42a5      	cmp	r5, r4
+20017874:	d005      	beq.n	20017882 <_entry+0x34>
+    __init_fptr init_p = (__init_fptr)__init_array_start[i];
+20017876:	f856 3025 	ldr.w	r3, [r6, r5, lsl #2]
+    if (init_p != NULL)
+2001787a:	b103      	cbz	r3, 2001787e <_entry+0x30>
+      init_p();
+2001787c:	4798      	blx	r3
+  for (; bss_p != bss_e;)
+    *(bss_p++) = 0;
+
+  // Call constructors if any.  
+  const size_t count = __init_array_end - __init_array_start;
+  for (size_t i = 0; i<count; ++i) {
+2001787e:	3501      	adds	r5, #1
+20017880:	e7f7      	b.n	20017872 <_entry+0x24>
+    if (init_p != NULL)
+      init_p();
+  }
+  
+  // Call user initialization
+  _hook_init(platform, api);
+20017882:	4641      	mov	r1, r8
+20017884:	4638      	mov	r0, r7
+20017886:	f000 f80b 	bl	200178a0 <_hook_init>
+2001788a:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
+2001788e:	bf00      	nop
+20017890:	2001798f 	.word	0x2001798f
+20017894:	2001799b 	.word	0x2001799b
+20017898:	20017840 	.word	0x20017840
+2001789c:	20017844 	.word	0x20017844
+
+200178a0 <_hook_init>:
+float tremolo_depth;
+
+/* Implementation of the initialization callback */
+void MODFX_INIT(uint32_t platform, uint32_t api)
+{
+  tremolo_depth = 0.0;
+200178a0:	4b04      	ldr	r3, [pc, #16]	; (200178b4 <_hook_init+0x14>)
+200178a2:	2200      	movs	r2, #0
+200178a4:	601a      	str	r2, [r3, #0]
+     * Reset phase
+     */
+    inline __attribute__((optimize("Ofast"),always_inline))
+    void reset(void) 
+    {
+      phi0 = 0x80000000;
+200178a6:	f04f 4200 	mov.w	r2, #2147483648	; 0x80000000
+200178aa:	605a      	str	r2, [r3, #4]
+     * param fsrecip Reciprocal of sampling frequency (1/Fs)
+     */
+    inline __attribute__((optimize("Ofast"),always_inline))
+    void setF0(const float f0, const float fsrecip) 
+    {
+      w0 = f32_to_q31(2.f * f0 * fsrecip);
+200178ac:	2200      	movs	r2, #0
+200178ae:	609a      	str	r2, [r3, #8]
+200178b0:	4770      	bx	lr
+200178b2:	bf00      	nop
+200178b4:	20017990 	.word	0x20017990
+
+200178b8 <_hook_process>:
+ * Note: sub_xn and sub_yn are not used here, as the Minilogue XD has no sub timbre
+ */
+void MODFX_PROCESS(const float *main_xn, float *main_yn,
+                   const float *sub_xn,  float *sub_yn,
+                   uint32_t frames)
+{
+200178b8:	b5f0      	push	{r4, r5, r6, r7, lr}
+200178ba:	4a1f      	ldr	r2, [pc, #124]	; (20017938 <_hook_process+0x80>)
+
+  // main output
+  float * __restrict my = main_yn;
+
+  // one sample per channel (L/R)
+  const float * my_e = my + 2*frames;
+200178bc:	9b05      	ldr	r3, [sp, #20]
+200178be:	6856      	ldr	r6, [r2, #4]
+     * Step phase one cycle forward
+     */
+    inline __attribute__((optimize("Ofast"),always_inline))
+    void cycle(void)
+    {
+      phi0 += w0;
+200178c0:	6897      	ldr	r7, [r2, #8]
+     * Get value of bipolar sine wave for current phase 
+     */
+    inline __attribute__((optimize("Ofast"),always_inline))
+    float sine_bi(void) 
+    {
+      const float phif = q31_to_f32(phi0);
+200178c2:	ed9f 5a1e 	vldr	s10, [pc, #120]	; 2001793c <_hook_process+0x84>
+200178c6:	00db      	lsls	r3, r3, #3
+200178c8:	eb01 0e03 	add.w	lr, r1, r3
+200178cc:	4635      	mov	r5, r6
+200178ce:	4614      	mov	r4, r2
+
+  for (; my != my_e; ) {
+
+    float tremolo_factor = 1.0 - tremolo_depth * lfo.sine_bi();
+
+    processed_mx = *(mx++) * tremolo_factor; // use L channel sample as input (mono)
+200178d0:	eef7 6a00 	vmov.f32	s13, #112	; 0x3f800000  1.0
+200178d4:	eef1 5a00 	vmov.f32	s11, #16	; 0x40800000  4.0
+  // one sample per channel (L/R)
+  const float * my_e = my + 2*frames;
+
+  float processed_mx;
+
+  for (; my != my_e; ) {
+200178d8:	4571      	cmp	r1, lr
+200178da:	ee07 5a90 	vmov	s15, r5
+200178de:	f100 0008 	add.w	r0, r0, #8
+200178e2:	443d      	add	r5, r7
+200178e4:	d022      	beq.n	2001792c <_hook_process+0x74>
+200178e6:	eef8 7ae7 	vcvt.f32.s32	s15, s15
+
+    float tremolo_factor = 1.0 - tremolo_depth * lfo.sine_bi();
+
+    processed_mx = *(mx++) * tremolo_factor; // use L channel sample as input (mono)
+200178ea:	ed94 6a00 	vldr	s12, [r4]
+200178ee:	ee27 7a85 	vmul.f32	s14, s15, s10
+ */
+static inline __attribute__((optimize("Ofast"),always_inline))
+float si_fabsf(float x)
+{
+  f32_t xs = {x};
+  xs.i &= 0x7fffffff;
+200178f2:	ee17 2a10 	vmov	r2, s14
+200178f6:	f022 4200 	bic.w	r2, r2, #2147483648	; 0x80000000
+200178fa:	ee07 2a90 	vmov	s15, r2
+200178fe:	ee77 7ae6 	vsub.f32	s15, s15, s13
+20017902:	ee67 7a87 	vmul.f32	s15, s15, s14
+20017906:	eeb0 7a66 	vmov.f32	s14, s13
+2001790a:	ee67 7aa5 	vmul.f32	s15, s15, s11
+2001790e:	eea6 7a67 	vfms.f32	s14, s12, s15
+20017912:	eef0 7a47 	vmov.f32	s15, s14
+20017916:	ed10 7a02 	vldr	s14, [r0, #-8]
+2001791a:	ee67 7a87 	vmul.f32	s15, s15, s14
+    mx++; //ignore R channel sample
+
+    // write to both channels (L/R)
+    *(my++) = processed_mx;
+2001791e:	ee17 2a90 	vmov	r2, s15
+20017922:	f841 2b08 	str.w	r2, [r1], #8
+    *(my++) = processed_mx;
+20017926:	ed41 7a01 	vstr	s15, [r1, #-4]
+2001792a:	e7d5      	b.n	200178d8 <_hook_process+0x20>
+2001792c:	08da      	lsrs	r2, r3, #3
+2001792e:	fb07 6302 	mla	r3, r7, r2, r6
+20017932:	6063      	str	r3, [r4, #4]
+20017934:	bdf0      	pop	{r4, r5, r6, r7, pc}
+20017936:	bf00      	nop
+20017938:	20017990 	.word	0x20017990
+2001793c:	30000000 	.word	0x30000000
+
+20017940 <_hook_param>:
+/**
+ * Implementation of the param callback that gets called when the user changes the time or depth knob
+ */
+void MODFX_PARAM(uint8_t index, int32_t value)
+{
+  const float valf = q31_to_f32(value); // valf is in range (0.0 - 1.0)
+20017940:	ee07 1a90 	vmov	s15, r1
+20017944:	eefa 7ae0 	vcvt.f32.s32	s15, s15, #31
+  switch (index) {
+20017948:	b110      	cbz	r0, 20017950 <_hook_param+0x10>
+2001794a:	2801      	cmp	r0, #1
+2001794c:	d00e      	beq.n	2001796c <_hook_param+0x2c>
+2001794e:	4770      	bx	lr
+     * param fsrecip Reciprocal of sampling frequency (1/Fs)
+     */
+    inline __attribute__((optimize("Ofast"),always_inline))
+    void setF0(const float f0, const float fsrecip) 
+    {
+      w0 = f32_to_q31(2.f * f0 * fsrecip);
+20017950:	eeb2 7a04 	vmov.f32	s14, #36	; 0x41200000  10.0
+20017954:	ee67 7a87 	vmul.f32	s15, s15, s14
+20017958:	ed9f 7a06 	vldr	s14, [pc, #24]	; 20017974 <_hook_param+0x34>
+2001795c:	4b06      	ldr	r3, [pc, #24]	; (20017978 <_hook_param+0x38>)
+2001795e:	ee67 7a87 	vmul.f32	s15, s15, s14
+20017962:	eefe 7ac0 	vcvt.s32.f32	s15, s15, #32
+20017966:	edc3 7a02 	vstr	s15, [r3, #8]
+2001796a:	4770      	bx	lr
+  case k_user_modfx_param_time:
+      lfo.setF0(valf * 10.0, k_samplerate_recipf);
+    break;
+  case k_user_modfx_param_depth:
+    tremolo_depth = valf;
+2001796c:	4b02      	ldr	r3, [pc, #8]	; (20017978 <_hook_param+0x38>)
+2001796e:	edc3 7a00 	vstr	s15, [r3]
+20017972:	4770      	bx	lr
+20017974:	37aec33e 	.word	0x37aec33e
+20017978:	20017990 	.word	0x20017990
+
+2001797c <_GLOBAL__sub_I_tremolo_depth>:
+
+    /**
+     * Default constructor
+     */
+    SimpleLFO(void) :
+      phi0(0x80000000), w0(0)
+2001797c:	4b03      	ldr	r3, [pc, #12]	; (2001798c <_GLOBAL__sub_I_tremolo_depth+0x10>)
+2001797e:	f04f 4200 	mov.w	r2, #2147483648	; 0x80000000
+20017982:	605a      	str	r2, [r3, #4]
+20017984:	2200      	movs	r2, #0
+20017986:	609a      	str	r2, [r3, #8]
+20017988:	4770      	bx	lr
+2001798a:	bf00      	nop
+2001798c:	20017990 	.word	0x20017990
