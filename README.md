@@ -1,6 +1,6 @@
 ## Tremoxd
 
-Tremolo effect for Minilogue XD based on Sine wave LFO
+Tremolo effect for Korg Minilogue XD based on Sine wave LFO
 
 | Knob  | Function |
 | ------------- | ------------- |
@@ -21,12 +21,17 @@ Tremolo effect for Minilogue XD based on Sine wave LFO
 
    * https://soundcloud.com/sophon/tremoxd-demo/s-EXrVQNZ3i2d
 
+----
+
 ### Build from source (for developers)
 
 * Prerequisite: Required toolchain and tools
   * Ref.: https://korginc.github.io/logue-sdk/
 
-* Execute `logue-sdk/tools/gcc/get_gcc_...` for your platform
-* Update CMSIS git submodule
-  * `tremoxd/logue-sdk/platform/minilogue-xd/ master git submodule update --init`
-* Execute `make` to build `.mnlgxdunit` file
+* Setup
+  * Execute `logue-sdk/tools/gcc/get_gcc_...` for your platform
+  * Update CMSIS git submodule
+     * `tremoxd/logue-sdk/platform/minilogue-xd/ master git submodule update --init`
+  
+* Build  
+  * Execute `make` to build `.mnlgxdunit` file
