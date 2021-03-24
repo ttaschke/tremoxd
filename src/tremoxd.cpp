@@ -27,7 +27,7 @@ void MODFX_INIT(uint32_t platform, uint32_t api)
 
 /**
  * Implementation of the process callback
- * Ref: https://korginc.github.io/logue-sdk/ref/minilogue-xd/v1.1-0/html/group__modfx__inst.html#gaea822f104394d2f1d9139568d18d7994
+ * Ref: https://korginc.github.io/logue-sdk/ref/minilogue-xd/v1.1-0/html/group__modfx__inst.html
  *
  * @param main_xn Input sample buffer for main timbre
  * @param main_yn Output sample buffer for main timbre
