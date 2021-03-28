@@ -5,6 +5,11 @@ Tremolo effect for Korg Minilogue XD based on Sine wave LFO
 | Knob  | Function |
 | ------------- | ------------- |
 | TIME  | Frequency of tremolo LFO |
+|   | `0.0 - 24.9` = Sine |
+|   | `25.0 - 49.9` = Triangle |
+|   | `50.0 - 74.9` = Saw |
+|   | `75.0 - 100.0` = Square |
+|   | (Each LFO shape's frequency range goes from 0-10 Hz) |
 | DEPTH  | Depth of tremolo effect (Amplitude) |
 
 
